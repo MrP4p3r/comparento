@@ -1,5 +1,32 @@
 # -*- coding: utf-8 -*-
 
+import operator as op
+from .util import cmp
+
+
+operator_names = [
+    # math
+    '__add__',
+    '__sub__',
+    '__mul__',
+    '__truediv__',
+    '__floordiv__',
+    '__pow__',
+
+    # comparisons
+    '__ne__',
+    '__eq__',
+    '__gt__',
+    '__ge__',
+    '__lt__',
+    '__le__',
+
+    # logic
+    '__or__',
+    '__and__',
+    '__xor__',
+]
+
 
 operator_repr = {
     # math
@@ -47,3 +74,7 @@ operator_priority = {
     '__xor__': 500,
     '__and__': 550,
 }
+
+
+def cmp_operator_priority(one, two):
+    return cmp(operator_priority[one.operator], operator_priority[two.operator])

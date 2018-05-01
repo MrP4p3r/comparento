@@ -2,14 +2,16 @@
 
 from . import constants
 from . import operands
-from . import util
+from . import expander
 
 
-class Element:
+class Element(expander.Expandable):
     pass
 
 
 class Symbol(Element, operands.MathOperand, operands.ComparisonOperand):
+
+    _expand_name_ = 'symbol'
 
     def __init__(self, name):
         self.name = name
@@ -20,6 +22,8 @@ class Symbol(Element, operands.MathOperand, operands.ComparisonOperand):
 
 class SymbolExpression(Element):
 
+    _expand_name_ = 'symbol_expression'
+
     def __init__(self, operator, symbol):
         self.operator = operator
         self.symbol = symbol
@@ -29,9 +33,9 @@ class Expression(Element):
 
     # __new__ as factory for MathExpression and BooleanExpression
 
-    def __init__(self, operator, operands):
+    def __init__(self, operator, operands_lst):
         self.operator = operator
-        self.operands = self.flatten(operands)
+        self.operands = self.flatten(operands_lst)
 
     def flatten(self, elements):
         new_elements_list = []
@@ -46,7 +50,7 @@ class Expression(Element):
         op_repr = f' {constants.operator_repr[self.operator]} '
 
         def _add_brackets(operand):
-            if hasattr(operand, 'operator') and util.cmp_operator_priority(self, operand) > 0:
+            if hasattr(operand, 'operator') and constants.cmp_operator_priority(self, operand) > 0:
                 return f'({repr(operand)})'
             return repr(operand)
 
@@ -54,14 +58,18 @@ class Expression(Element):
 
 
 class MathExpression(Expression, operands.MathOperand, operands.ComparisonOperand):
-    pass
+
+    _expand_name_ = 'math_expression'
 
 
 class BooleanExpression(Expression, operands.BooleanOperand):
-    pass
+
+    _expand_name_ = 'boolean_expression'
 
 
 class Comparison(Element, operands.BooleanOperand):
+
+    _expand_name_ = 'comparison'
 
     def __init__(self, operator, one, two):
         self.one = one
@@ -70,4 +78,3 @@ class Comparison(Element, operands.BooleanOperand):
 
     def __repr__(self):
         return f'{self.one!r} {constants.operator_repr[self.operator]} {self.two!r}'
-

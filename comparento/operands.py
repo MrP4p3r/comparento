@@ -42,7 +42,7 @@ class ComparisonOperand:
         return elements.Comparison(operator, self, other)
 
     def __eq__(self, other):
-        self.handle_comparison_operator('__eq__', other)
+        return self.handle_comparison_operator('__eq__', other)
 
     def __ne__(self, other):
         return self.handle_comparison_operator('__ne__', other)
